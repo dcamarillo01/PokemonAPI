@@ -38,7 +38,35 @@
         dataType: "JSON",
         success: function (data) {
             console.log("se hizo la peticion correctamente")
+            console.log(data)
             console.log(data.results)
+
+           
+
+            $.each(data.results, function (index, value) {
+                console.log(value.url);
+
+                var theurl = value.url;
+
+                $.ajax({
+                    
+                    url: theurl,
+                    method: "GET",
+                    dataType: "JSON",
+                    success: function(data){
+                        console.log(data);
+                    },
+                    error: function(data){
+                        console.log(error);
+                    }
+                
+                });
+
+
+
+
+            });
+
         },
         error: function () {
             console.log("Error en la peticion")
