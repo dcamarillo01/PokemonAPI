@@ -1,0 +1,69 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<h1>Pokemones!</h1>
+
+<button class="btn btn-success" id="pooButton">Pokemon!</button>
+
+
+<h1>Trainer information</h1>
+<h2>About me</h2>
+<p>I'm a Pokémon trainer, and I love collecting Pokémon!</p>
+<p>Check out my super cool team! They'll win in any Pokémon battle!</p>
+<h2>My Pokémon</h2>
+<ul>
+    <li><button type="button" id="pButton">Pikachu</button></li>
+    <li><button type="button" id="eButton">Eevee</button></li>
+</ul>
+<h2>Pokémon information</h2>
+<p class="PokeInfo">
+    {jQuery replaces this text when you create an AJAX request!}
+</p>
+
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+
+
+
+
+    // Hacer Peticion a Pokemon API
+
+    $.ajax({
+        url: "https://pokeapi.co/api/v2/pokemon?offset=20&limit=20",
+        method: "GET",
+        dataType: "JSON",
+        success: function (data) {
+            console.log("se hizo la peticion correctamente")
+            console.log(data.results)
+        },
+        error: function () {
+            console.log("Error en la peticion")
+        }
+
+
+
+    });
+
+
+    $('#pButton').click(function () {
+        $('.text').text('loading...');
+        $.ajax({
+            type: "GET",
+            url: "https://pokeapi.co/api/v2/pokemon-species/pikachu/",
+            success: function (data) {
+                var pokeDescription =
+                    JSON.stringify(data.flavor_text_entries[2].flavor_text);
+                var prettyDescription =
+                    pokeDescription.replace(/\\n/g, ' ');
+                $('.PokeInfo').text(prettyDescription);
+            },
+        });
+    });
+
+
+</script>
+
