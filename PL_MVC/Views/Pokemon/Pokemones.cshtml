@@ -9,19 +9,37 @@
 <button class="btn btn-success" id="pooButton">Pokemon!</button>
 
 
-<h1>Trainer information</h1>
-<h2>About me</h2>
-<p>I'm a Pokémon trainer, and I love collecting Pokémon!</p>
-<p>Check out my super cool team! They'll win in any Pokémon battle!</p>
-<h2>My Pokémon</h2>
-<ul>
-    <li><button type="button" id="pButton">Pikachu</button></li>
-    <li><button type="button" id="eButton">Eevee</button></li>
-</ul>
-<h2>Pokémon information</h2>
-<p class="PokeInfo">
-    {jQuery replaces this text when you create an AJAX request!}
-</p>
+
+<container class="container">
+    <div class="row">
+        <div class="col">
+
+
+            <div class="row">
+                <div class="col">
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Imagen</th>
+                                <th>Nombre</th>
+                                <th>Experiencia</th>
+                                <th>height</th>
+                                <th>weight</th>
+                                <th>Stats</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody">
+
+                      
+                         
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</container>
 
 
 <script src="~/lib/jquery/dist/jquery.js"></script>
@@ -47,6 +65,7 @@
                 console.log(value.url);
 
                 var theurl = value.url;
+                var thename = value.name;
 
                 $.ajax({
                     
@@ -55,6 +74,38 @@
                     dataType: "JSON",
                     success: function(data){
                         console.log(data);
+
+                        // console.log(data.stats[0].base_stat)
+                        // console.log(data.stats[0].stat.name)
+                        var hp = data.stats[0].stat.name + ":" + data.stats[0].base_stat;
+                        var attack = data.stats[1].stat.name + ":" + data.stats[1].base_stat;
+                        var defense = data.stats[2].stat.name + ":" + data.stats[2].base_stat;
+                        var special_attack = data.stats[3].stat.name + ":" + data.stats[3].base_stat;
+                        var special_defense = data.stats[4].stat.name + ":" + data.stats[4].base_stat;
+                        var speed = data.stats[5].stat.name + ":" + data.stats[5].base_stat;
+                        
+
+                        $("#tbody").append(`
+
+                                  <tr>
+                                   <td><img src="${data.sprites.front_default}"/></td>
+                                   <td>${thename}</td>
+                                   <td>${data.base_experience}</td>
+                                   <td>${data.height}</td>
+                                   <td>${data.weight}</td>
+                                   <td>
+                                       <ul>
+                                           <li>${hp}</li>
+                                           <li>${attack}</li>
+                                           <li>${defense}</li>
+                                           <li>${speed}</li>
+                                           <li>${special_attack}</li>
+                                           <li>${special_defense}</li>
+                                       </ul>
+                                   </td>
+                               </tr>
+                        `)
+
                     },
                     error: function(data){
                         console.log(error);
