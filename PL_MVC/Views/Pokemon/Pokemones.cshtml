@@ -4,37 +4,31 @@
 @{
 }
 
-<h1>Pokemones!</h1>
-
-<button class="btn btn-success" id="pooButton">Pokemon!</button>
 
 
 
 <container class="container">
     <div class="row">
         <div class="col">
+            <h1>Pokemones!</h1>
+
+            
+            <div class="row" style="padding-top:20px">
+                <div class="col">
+                    <button class="btn btn-outline-info" id="p2sButton" onclick="cargarPokemones(2)">Anterior</button>
+                    <button class="btn btn-outline-info" id="pButton" onclick="cargarPokemones(1)">Siguiente</button>
+                </div>
+            </div>
 
 
-            <div class="row">
+            <div class="row" style="padding-top:20px">
                 <div class="col">
 
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Imagen</th>
-                                <th>Nombre</th>
-                                <th>Experiencia</th>
-                                <th>height</th>
-                                <th>weight</th>
-                                <th>Stats</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody">
 
-                      
-                         
-                        </tbody>
-                    </table>
+                    <div class="row" id="books">
+                    </div>
+
+                  
                 </div>
             </div>
         </div>
@@ -46,102 +40,106 @@
 <script>
 
 
+    $(document).ready(function () {
+        cargarPokemones(0); 
+    });
+
+    let  urlStart = "https://pokeapi.co/api/v2/pokemon?offset=00&limit=40"
+    let lastNext = null;
+    let lastPrev = null;
+
+    function cargarPokemones(numero){
+
+        // Hacer Peticion a Pokemon API
+
+        let targetUrl = urlStart;
+        if (numero === 1 && lastNext) targetUrl = lastNext;    
+        if (numero === 2 && lastPrev) targetUrl = lastPrev;
 
 
-    // Hacer Peticion a Pokemon API
+        $.ajax({
+            url: targetUrl,
+            method: "GET",
+            dataType: "JSON",
+            success: function (data) {
+                $("#books").empty();
 
-    $.ajax({
-        url: "https://pokeapi.co/api/v2/pokemon?offset=20&limit=20",
-        method: "GET",
-        dataType: "JSON",
-        success: function (data) {
-            console.log("se hizo la peticion correctamente")
-            console.log(data)
-            console.log(data.results)
+                console.log(data)
+                console.log("NEXT")
+                console.log(data.next)
+                console.log("PREVIOUS")
+                console.log(data.previous)
 
-           
+                urlStart = targetUrl;
+                lastNext = data.next;
+                lastPrev = data.previous;
 
-            $.each(data.results, function (index, value) {
-                console.log(value.url);
 
-                var theurl = value.url;
-                var thename = value.name;
+                $.each(data.results, function (index, value) {
 
-                $.ajax({
-                    
-                    url: theurl,
-                    method: "GET",
-                    dataType: "JSON",
-                    success: function(data){
-                        console.log(data);
+                    var theurl = value.url;
+                    var thename = value.name;
+                    var thenext = value.next;
 
-                        // console.log(data.stats[0].base_stat)
-                        // console.log(data.stats[0].stat.name)
-                        var hp = data.stats[0].stat.name + ":" + data.stats[0].base_stat;
-                        var attack = data.stats[1].stat.name + ":" + data.stats[1].base_stat;
-                        var defense = data.stats[2].stat.name + ":" + data.stats[2].base_stat;
-                        var special_attack = data.stats[3].stat.name + ":" + data.stats[3].base_stat;
-                        var special_defense = data.stats[4].stat.name + ":" + data.stats[4].base_stat;
-                        var speed = data.stats[5].stat.name + ":" + data.stats[5].base_stat;
-                        
+                    $.ajax({
 
-                        $("#tbody").append(`
+                        url: theurl,
+                        method: "GET",
+                        dataType: "JSON",
+                        success: function (data) {
 
-                                  <tr>
-                                   <td><img src="${data.sprites.front_default}"/></td>
-                                   <td>${thename}</td>
-                                   <td>${data.base_experience}</td>
-                                   <td>${data.height}</td>
-                                   <td>${data.weight}</td>
-                                   <td>
-                                       <ul>
-                                           <li>${hp}</li>
-                                           <li>${attack}</li>
-                                           <li>${defense}</li>
-                                           <li>${speed}</li>
-                                           <li>${special_attack}</li>
-                                           <li>${special_defense}</li>
-                                       </ul>
-                                   </td>
-                               </tr>
-                        `)
+                            
+                            var hp = data.stats[0].stat.name + ":" + data.stats[0].base_stat;
+                            var attack = data.stats[1].stat.name + ":" + data.stats[1].base_stat;
+                            var defense = data.stats[2].stat.name + ":" + data.stats[2].base_stat;
+                            var special_attack = data.stats[3].stat.name + ":" + data.stats[3].base_stat;
+                            var special_defense = data.stats[4].stat.name + ":" + data.stats[4].base_stat;
+                            var speed = data.stats[5].stat.name + ":" + data.stats[5].base_stat;
 
-                    },
-                    error: function(data){
-                        console.log(error);
-                    }
-                
+                            $("#books").append(
+                                `
+                                            <div class="book" id="book" >
+                                            <p>STATS</p>
+                                                       <p>${hp}</p>
+                                                       <p>${attack}</p>
+                                                       <p>${defense}</p>
+                                                       <p>${speed}</p>
+                                                       <p>${special_attack}</p>
+                                                       <p>${special_defense}</p>
+                                            <div class="cover">
+                                                    <p>${thename}</p>
+                                                        <img src="${data.sprites.other.showdown.front_default}"/>
+                                                    <p>Exp: ${data.base_experience}</p>
+                                                    <p>Altura: ${data.height}</p>
+                                                    <p>Peso: ${data.weight}</p>
+                                           </div>
+                                         </div>
+
+                                    `
+                            );
+
+                        },
+                        error: function (data) {
+                            console.log(error);
+                        }
+
+                    });
+
+
+
+
                 });
 
-
-
-
-            });
-
-        },
-        error: function () {
-            console.log("Error en la peticion")
-        }
-
-
-
-    });
-
-
-    $('#pButton').click(function () {
-        $('.text').text('loading...');
-        $.ajax({
-            type: "GET",
-            url: "https://pokeapi.co/api/v2/pokemon-species/pikachu/",
-            success: function (data) {
-                var pokeDescription =
-                    JSON.stringify(data.flavor_text_entries[2].flavor_text);
-                var prettyDescription =
-                    pokeDescription.replace(/\\n/g, ' ');
-                $('.PokeInfo').text(prettyDescription);
             },
+            error: function () {
+                console.log("Error en la peticion")
+            }
+
+
+
         });
-    });
+
+    }
 
 
 </script>
